@@ -59,7 +59,6 @@ module instruction_execution_unit #(
             curr_state <= next_state;
 
             // set registers
-            // TODO: Write logic for registers
             case (curr_state)
                 FETCH: begin
                     temp_reg        <= data_din;
