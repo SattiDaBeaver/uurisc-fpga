@@ -6,22 +6,26 @@ module ALU #(
     input  logic [DATA_WIDTH - 1 : 0]   alu_op,
 
     output logic [DATA_WIDTH - 1 : 0]   alu_dout,
-    output logic [DATA_WIDTH - 1 : 0]   alu_flags,
+    output logic [DATA_WIDTH - 1 : 0]   alu_flags
 );
 
-    enum logic [DATA_WIDTH - 1 : 0] { 
-        ADD, SUB, SRL, SLL, OR, NOR, AND, NAND, XOR
-    };
+    typedef enum logic [DATA_WIDTH - 1 : 0] { 
+        ADD, SUB, SRL, SLL, OR, NOR, AND, NAND, XOR, NOT
+    } alu_op_t;
 
     logic n_flag, z_flag, c_flag;
+    logic [DATA_WIDTH - 1 : 0] A;
+    logic [DATA_WIDTH - 1 : 0] B;
     logic [DATA_WIDTH : 0] alu_result;
 
     assign alu_dout = alu_result[DATA_WIDTH - 1 : 0];
     assign alu_flags[2:0] = {c_flag, n_flag, z_flag};
     assign alu_flags[DATA_WIDTH - 1 : 3] = 'h0;
+    assign A = alu_a_in;
+    assign B = alu_b_in;
 
     always @ (*) begin
-        n_flag = (alu_dout < 0);
+        n_flag = (alu_dout[DATA_WIDTH-1] == 1'b1);
         z_flag = (alu_dout == 0);
         c_flag = alu_result[DATA_WIDTH];
 
@@ -35,6 +39,7 @@ module ALU #(
             AND:        alu_result = A & B;
             NAND:       alu_result = ~(A & B);
             XOR:        alu_result = A ^ B;
+            NOT:        alu_result = ~A;
 
             default:    alu_result = 'h0;
         endcase
